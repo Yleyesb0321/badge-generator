@@ -1,186 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Badge Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
-    <style>
-        *{
-          box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f3f4f6;
-        }
-        .container {
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            gap:1em;
-            align-items: center;
-            margin: 0 auto;
-        }
-        #badgeCanvas {
-            display: block;
-            margin: 10px auto;
-            border: 1px solid #ccc;
-        }
-        form {
-            text-align: center;
-            width:min(560px, 100%);
-            margin-top: 20px;
-        }
-        input[type="file"] {
-            display: block;
-        }
-        input[type="text"] {
-            display: block;
-            width: 100%;
-            padding: 0.5em;
-        }
-        button {
-            display: block;
-            margin: 10px auto;
-        }
-        h1{
-          margin-bottom:0;
-        }
-        button, .button{
-            padding: 0.5em 1em;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 0.25em;
-            cursor: pointer;
-            font-size: 1.5em;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
-        button.secondary{
-            background-color: #f3f4f6;
-            color: #2563eb;
-            border: 2px solid #2563eb;
-            width: 100%;
-            font-size: 1.2em;
-            margin-top: 16px;
-        }
-        form{
-          text-align: left;
-        }
-        form label:last-of-type{
-          margin-top: 16px;
-        }
-        form label{
-          display: block;
-          margin-bottom: 0.4em;
-        }
-        nav{
-          display: grid;
-          grid-template-columns: 300px 1fr;
-          align-items: center;
-          background-color: black;
-          color:white;
-          width: 100%;
-          padding: 1em;
-          text-align: right;
-        }
-
-        a:visited{
-          color:inherit
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Badge Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav>
-      <img src="white_logo.png" alt="Logo" width="250">
-      <div>
-        <a href="http://codigofacilito.com" class="button">Ir a Código Facilito</a>
-      </div>
-      
-    </nav>
-    <div class="container">
-      <h1 style="text-align: center;">Genera tu credencial virtual v2</h1>
-      <form id="badgeForm">
-          <label for="imageFile">Sube tu foto</label>
-          <input type="file" id="imageFile" accept="image/*" required>
-          <label for="textInput">Escribe tu nombre</label>
-          <input type="text" id="textInput" maxlength="100" placeholder="Tu nombre" required>
-          <button type="submit" class="secondary">Generar</button>
-      </form>
-      <canvas id="badgeCanvas" width="560" height="720"></canvas>
-      <button id="downloadBtn">Descargar imagen</button>
+  <nav>
+    <img src="white_logo.png" alt="Logo" width="250">
+    <div>
+      <a href="http://codigofacilito.com" class="button">Ir a Código Facilito</a>
     </div>
+  </nav>
 
-    <script>
-        const canvas = document.getElementById('badgeCanvas');
-        const ctx = canvas.getContext('2d');
-        const form = document.getElementById('badgeForm');
-        const imageFile = document.getElementById('imageFile');
-        const textInput = document.getElementById('textInput');
-        const downloadBtn = document.getElementById('downloadBtn');
+  <div class="container">
+    <h1 style="text-align: center;">Genera tu credencial virtual v3</h1>
+    <form id="badgeForm">
+      <label for="imageFile">Sube tu foto</label>
+      <input type="file" id="imageFile" accept="image/*" required>
+      <label for="textInput">Escribe tu nombre</label>
+      <input type="text" id="textInput" maxlength="100" placeholder="Tu nombre" required>
+      <button type="submit" class="secondary">Generar</button>
+    </form>
+    <canvas id="badgeCanvas" width="560" height="720"></canvas>
+    <button id="downloadBtn">Descargar imagen</button>
+  </div>
 
-        const badgeImage = new Image();
-        badgeImage.src = 'badge-v2.jpg';
-        badgeImage.onload = () => {
-            ctx.drawImage(badgeImage, 0, 0, canvas.width, canvas.height);
-        };
-
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const file = imageFile.files[0];
-            const text = textInput.value;
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        // Redraw the badge background
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(badgeImage, 0, 0, canvas.width, canvas.height);
-
-                        // Draw the uploaded image as a circle
-                        const x = 180;
-                        const y = 45;
-                        const radius = 100;
-                        ctx.save();
-                        ctx.beginPath();
-                        ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
-                        ctx.closePath();
-                        ctx.clip();
-                        ctx.drawImage(img, x, y, radius * 2, radius * 2);
-                        ctx.restore();
-
-                        // Draw the white stroke
-                        ctx.beginPath();
-                        ctx.arc(x + radius, y + radius, radius, 0, 2 * Math.PI);
-                        ctx.lineWidth = 5;
-                        ctx.strokeStyle = 'white';
-                        ctx.stroke();
-                        ctx.closePath();
-
-                        // Draw the text
-                        ctx.font = '36px Roboto';
-                        ctx.fillStyle = 'white';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(text, canvas.width / 2, y + radius * 2 + 50);
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/jpeg');
-            link.download = 'badge.jpg';
-            link.click();
-        });
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>
